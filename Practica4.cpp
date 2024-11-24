@@ -48,6 +48,36 @@ int Lineas(double v1x, double v1y, double v2x, double v2y, int x) {
     return -1;
 }
 
+double Angulo(double v1x, double v1y, double v2x, double v2y, bool grados=false) {
+    double Escalar = ProductoEscalar(v1x, v1y, v2x, v2y);
+    double modulo1 = sqrt(v1x * v1x + v1y * v1y);
+    double modulo2 = sqrt(v2x * v2x + v2y * v2y);
+    
+    double angulo = Escalar / (modulo1 * modulo2);
+    angulo = fmax(-1, fmin(1, angulo));
+    
+    double rad = acos(angulo);
+    
+    if (grados) {
+        return rad * (180.0 / M_PI);
+    }
+    
+    return rad;
+}
+
+int ContadorProyeccion() {
+    static int contador = 0;
+    return ++contador;
+}
+
+void Proyeccion(double v1x, double v1y, double v2x, double v2y, double* compx, double* compy){
+    ContadorProyeccion();
+    double Escalar = ProductoEscalar(v1x, v1y, v2x, v2y);
+    double modulo2_cuadrado = v2x * v2x + v2y * v2y;
+    *compx = (Escalar / modulo2_cuadrado) * v2x;
+    *compy = (Escalar / modulo2_cuadrado) * v2y;
+}
+
 int main() {
     Punto2D P[4];
 
@@ -78,6 +108,15 @@ int main() {
     } else {
         cout << "Las lineas se cruzan." << endl;
     }
+
+    double angulo_rad = Angulo(v1x, v1y, v2x, v2y);
+    cout << "El angulo entre las lineas en radianes es: " << angulo_rad << endl;
+
+    double ComponenteX, ComponenteY;
+    Proyeccion(v1x, v1y, v2x, v2y, &ComponenteX, &ComponenteY);
+    cout << "La proyeccion del vector 1 sobre el vector 2 es: (" << ComponenteX << ", "<< ComponenteY << ")"<< endl;
+
+    cout << "La funcion Proyeccion fue llamada " << ContadorProyeccion() - 1 << " veces." << endl;
     
     return 0;
 }
